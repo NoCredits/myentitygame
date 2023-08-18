@@ -1,25 +1,28 @@
 package com.mygdx.entitygame.screens;
 
-import com.badlogic.gdx.Game;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
+import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.entitygame.MyGame;
 
 public class LoadingScreen implements Screen {
-
-    private final SpriteBatch sb;
-    private MyGame parent; // a field to store our or
+    private MyGame parent;
     private TextureAtlas atlas;
-    private TextureAtlas.AtlasRegion title;
+    private AtlasRegion title;
     private Animation flameAnimation;
 
     public final int IMAGE = 0;		// loading images
@@ -32,77 +35,95 @@ public class LoadingScreen implements Screen {
 
     // timer for exiting loading screen
     public float countDown = 0.1f;
-    private TextureAtlas.AtlasRegion dash;
+    private AtlasRegion dash;
     private Stage stage;
     private Table table;
     private Image titleImage;
-    private TextureAtlas.AtlasRegion copyright;
+    private AtlasRegion copyright;
     private Image copyrightImage;
     private Table loadingTable;
-    private TextureAtlas.AtlasRegion background;// chestrator
-    private float stateTime;
+    private AtlasRegion background;
 
-    // our constructor with a Box2DTutorial argument
-    public LoadingScreen(MyGame game){
-        parent = game;
-        sb = new SpriteBatch();
-        sb.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);// setting the argument to our field.
+
+    public LoadingScreen(MyGame box2dTutorial){
+        parent = box2dTutorial;
+        stage = new Stage(new ScreenViewport());
+
+        loadAssets();
+        // initiate queueing of images but don't start loading
+        parent.assMan.queueAddImages();
+        System.out.println("Loading images....");
+    }
+
+    private void loadAssets() {
+        // load loading images and wait until finished
+        parent.assMan.queueAddLoadingImages();
+        parent.assMan.manager.finishLoading();
+
+        // get images used to display loading progress
+        atlas = parent.assMan.manager.get("images/loading.atlas");
+        title = atlas.findRegion("staying-alight-logo");
+        dash = atlas.findRegion("loading-dash");
+        background = atlas.findRegion("flamebackground");
+        copyright = atlas.findRegion("copyright");
+        flameAnimation = new Animation(0.07f, atlas.findRegions("flames/flames"), PlayMode.LOOP);
+
     }
 
     @Override
     public void show() {
-        // load loading images and wait until finished
-        parent.assMan.queueAddImages();
-        parent.assMan.manager.finishLoading();
 
-// get images used to display loading progress
-        atlas = parent.assMan.manager.get("images/loading.atlas");
-        title = atlas.findRegion("staying-alight-logo");
-        dash = atlas.findRegion("loading-dash");
+        titleImage = new Image(title);
+        copyrightImage = new Image(copyright);
 
-// initiate queueing of images but don't start loading
-        flameAnimation = new Animation(0.07f, atlas.findRegions("flames/flames"), com.badlogic.gdx.graphics.g2d.Animation.PlayMode.LOOP);  //new
+        table = new Table();
+        table.setFillParent(true);
+        table.setDebug(false);
+        table.setBackground(new TiledDrawable(background));
 
-// initiate queueing of images but don't start loading
-        //parent.assMan.queueAddImages();
-        //System.out.println("Loading images....");
+        loadingTable = new Table();
+        loadingTable.add(new LoadingBarPart(dash,flameAnimation));
+        loadingTable.add(new LoadingBarPart(dash,flameAnimation));
+        loadingTable.add(new LoadingBarPart(dash,flameAnimation));
+        loadingTable.add(new LoadingBarPart(dash,flameAnimation));
+        loadingTable.add(new LoadingBarPart(dash,flameAnimation));
+        loadingTable.add(new LoadingBarPart(dash,flameAnimation));
+        loadingTable.add(new LoadingBarPart(dash,flameAnimation));
+        loadingTable.add(new LoadingBarPart(dash,flameAnimation));
+        loadingTable.add(new LoadingBarPart(dash,flameAnimation));
+        loadingTable.add(new LoadingBarPart(dash,flameAnimation));
 
-        stateTime = 0f;
 
-        System.out.println("After show");
+        table.add(titleImage).align(Align.center).pad(10, 0, 0, 0).colspan(10);
+        table.row(); // move to next row
+        table.add(loadingTable).width(400);
+        table.row();
+        table.add(copyrightImage).align(Align.center).pad(200, 0, 0, 0).colspan(10);
+
+        stage.addActor(table);
+
     }
 
     @Override
     public void render(float delta) {
-
-        Gdx.gl.glClearColor(0,0,0,1); //  clear the screen
+        Gdx.gl.glClearColor(0,0,0,1);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // start SpriteBatch and draw the logo
-//        sb.begin();
-//        sb.draw(title, 135, 250);
-//        sb.end();
-
-        stateTime += delta; // Accumulate elapsed animation time  // new
-
-        TextureRegion currentFrame = (TextureRegion) flameAnimation.getKeyFrame(stateTime, true);  //new
-
-        sb.begin();
-        drawLoadingBar(currentLoadingStage * 2, currentFrame);  // new
-        sb.draw(title, 135, 250);
-        sb.end();
-        // check if the asset manager has finished loading
         if (parent.assMan.manager.update()) { // Load some, will return true if done loading
             currentLoadingStage+= 1;
+            if(currentLoadingStage <= 5){
+                loadingTable.getCells().get((currentLoadingStage-1)*2).getActor().setVisible(true);
+                loadingTable.getCells().get((currentLoadingStage-1)*2+1).getActor().setVisible(true);
+            }
             switch(currentLoadingStage){
                 case FONT:
                     System.out.println("Loading fonts....");
-                    parent.assMan.queueAddFonts(); // first load done, now start fonts
+                    parent.assMan.queueAddFonts();
                     break;
                 case PARTY:
                     System.out.println("Loading Particle Effects....");
-                    parent.assMan.queueAddParticleEffects(); // fonts are done now do party effects
+                    parent.assMan.queueAddParticleEffects();
                     break;
                 case SOUND:
                     System.out.println("Loading Sounds....");
@@ -113,50 +134,78 @@ public class LoadingScreen implements Screen {
                     parent.assMan.queueAddMusic();
                     break;
                 case 5:
-                    System.out.println("Finished"); // all done
+                    System.out.println("Finished");
                     break;
             }
             if (currentLoadingStage >5){
-                countDown -= delta;  // timer to stay on loading screen for short preiod once done loading
-                currentLoadingStage = 5;  // cap loading stage to 5 as will use later to display progress bar anbd more than 5 would go off the screen
-                if(countDown < 0){ // countdown is complete
-                    parent.changeScreen(MyGame.MENU);  /// go to menu screen
+                countDown -= delta;
+                currentLoadingStage = 5;
+                if(countDown < 0){
+                    parent.changeScreen(MyGame.MENU);
                 }
             }
         }
 
-
+        stage.act();
+        //stage.draw();
     }
-    private void drawLoadingBar(int stage, TextureRegion currentFrame){
-        for(int i = 0; i < stage;i++){
-            sb.draw(currentFrame, 50 + (i * 50), 150, 50, 50);
-            sb.draw(dash, 35 + (i * 50), 140, 80, 80);
-        }
-    }
-
 
     @Override
     public void resize(int width, int height) {
-
+        stage.getViewport().update(width, height,true);
     }
 
     @Override
     public void pause() {
-
     }
 
     @Override
     public void resume() {
-
     }
 
     @Override
     public void hide() {
-
     }
 
     @Override
     public void dispose() {
+        stage.dispose();
+    }
+
+    class LoadingBarPart extends Actor{
+
+        private AtlasRegion image = dash;
+        private Animation flameAnimation;
+        private float stateTime = 0f;
+        private TextureRegion currentFrame;
+
+
+        public LoadingBarPart(AtlasRegion ar, Animation an) {
+            super();
+            image = ar;
+            flameAnimation = an;
+            this.setWidth(30);
+            this.setHeight(25);
+            this.setVisible(false);
+            //this.debug();
+        }
+
+        @Override
+        public void draw(Batch batch, float parentAlpha) {
+            super.draw(batch, parentAlpha);
+            batch.draw(image, getX(),getY(), 30, 30);
+            batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
+            batch.draw(currentFrame, getX()-5,getY(), 40, 40);
+            batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+        }
+
+        @Override
+        public void act(float delta) {
+            super.act(delta);
+            stateTime += delta; // Accumulate elapsed animation time
+            currentFrame = (TextureRegion) flameAnimation.getKeyFrame(stateTime, true);
+        }
 
     }
 }

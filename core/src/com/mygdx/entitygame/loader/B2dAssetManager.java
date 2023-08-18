@@ -12,9 +12,6 @@ public class B2dAssetManager {
     // Music
     public final String playingSong = "music/Rolemusic_-_pl4y1ng.mp3";
 
-    public final String playerImage = "images/player.png";
-    public final String enemyImage = "images/enemy.png";
-
     // Textures
     public final String gameImages = "images/game.atlas";
     public final String loadingImages = "images/loading.atlas";
@@ -34,13 +31,17 @@ public class B2dAssetManager {
     public final String waterEffect = "particles/water.pe";
     public final String fireEffect = "particles/fire.pe";
     public void queueAddImages(){
-        //manager.load(playerImage, Texture.class);
-        //manager.load(enemyImage, Texture.class);
+
         manager.load(gameImages, TextureAtlas.class);
-        manager.load(loadingImages, TextureAtlas.class);
+
     }
     public void queueAddMusic(){
         manager.load(playingSong, Music.class);
+    }
+
+    // a small set of images used by the loading screen
+    public void queueAddLoadingImages(){
+        manager.load(loadingImages, TextureAtlas.class);
     }
 
     public void queueAddFonts(){
