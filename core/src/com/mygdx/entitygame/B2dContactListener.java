@@ -14,8 +14,8 @@ package com.mygdx.entitygame;
 public class B2dContactListener implements ContactListener {
     private B2dModel parent;
 
-    public B2dContactListener(B2dModel parent){
-        this.parent = parent;
+    public B2dContactListener(){
+
     }
 
     @Override
@@ -25,13 +25,6 @@ public class B2dContactListener implements ContactListener {
         Fixture fb = contact.getFixtureB();
         System.out.println(fa.getBody().getType()+" has hit "+ fb.getBody().getType());
 
-        if(fa.getBody().getUserData() == "IAMTHESEA"){
-            parent.isSwimming = true;
-            return;
-        }else if(fb.getBody().getUserData() == "IAMTHESEA"){
-            parent.isSwimming = true;
-            return;
-        }
 
         if(fa.getBody().getType() == BodyDef.BodyType.StaticBody){
             this.shootUpInAir(fa, fb);
@@ -52,13 +45,6 @@ public class B2dContactListener implements ContactListener {
         System.out.println("Contact");
         Fixture fa = contact.getFixtureA();
         Fixture fb = contact.getFixtureB();
-        if(fa.getBody().getUserData() == "IAMTHESEA"){
-            parent.isSwimming = false;
-            return;
-        }else if(fb.getBody().getUserData() == "IAMTHESEA"){
-            parent.isSwimming = false;
-            return;
-        }
     }
     @Override
     public void preSolve(Contact contact, Manifold oldManifold) {

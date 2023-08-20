@@ -35,7 +35,7 @@ public class B2dModel {
         controller = control;
 
         world = new World(new Vector2(0,-10f), true);
-        world.setContactListener(new B2dContactListener(this));
+        world.setContactListener(new B2dContactListener());
         createFloor();
 
         // get our body factory singleton and store it in bodyFactory
