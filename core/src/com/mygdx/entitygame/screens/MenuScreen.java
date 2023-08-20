@@ -4,12 +4,15 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.entitygame.MyGame;
 
@@ -40,7 +43,9 @@ public class MenuScreen implements Screen {
         table.setDebug(true);
 
         Skin skin = new Skin(Gdx.files.internal("skin/glassy-ui.json"));
-
+        TextureAtlas atlas = parent.assMan.manager.get("images/loading.atlas");
+        TextureAtlas.AtlasRegion background = atlas.findRegion("flamebackground");
+        table.setBackground(new TiledDrawable(background));
         TextButton newGame = new TextButton("New Game", skin);
         TextButton preferences = new TextButton("Preferences", skin);
 

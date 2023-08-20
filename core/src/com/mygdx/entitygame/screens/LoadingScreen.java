@@ -34,7 +34,7 @@ public class LoadingScreen implements Screen {
     private int currentLoadingStage = 0;
 
     // timer for exiting loading screen
-    public float countDown = 0.1f;
+    public float countDown = 2f;
     private AtlasRegion dash;
     private Stage stage;
     private Table table;
@@ -107,7 +107,7 @@ public class LoadingScreen implements Screen {
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(0,0,0,1);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        //Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         if (parent.assMan.manager.update()) { // Load some, will return true if done loading
@@ -147,7 +147,7 @@ public class LoadingScreen implements Screen {
         }
 
         stage.act();
-        //stage.draw();
+        stage.draw();
     }
 
     @Override
@@ -175,23 +175,25 @@ public class LoadingScreen implements Screen {
     class LoadingBarPart extends Actor{
 
         private AtlasRegion image = dash;
-        private Animation flameAnimation;
+        private Animation<TextureRegion> flameAnimation;
         private float stateTime = 0f;
         private TextureRegion currentFrame;
 
 
-        public LoadingBarPart(AtlasRegion ar, Animation an) {
+        public LoadingBarPart(AtlasRegion ar, Animation<TextureRegion> an) {
             super();
+
             image = ar;
             flameAnimation = an;
             this.setWidth(30);
             this.setHeight(25);
-            this.setVisible(false);
+            this.setVisible(true);
             //this.debug();
         }
 
         @Override
         public void draw(Batch batch, float parentAlpha) {
+
             super.draw(batch, parentAlpha);
             batch.draw(image, getX(),getY(), 30, 30);
             batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
@@ -202,9 +204,10 @@ public class LoadingScreen implements Screen {
 
         @Override
         public void act(float delta) {
+
             super.act(delta);
             stateTime += delta; // Accumulate elapsed animation time
-            currentFrame = (TextureRegion) flameAnimation.getKeyFrame(stateTime, true);
+            currentFrame = flameAnimation.getKeyFrame(stateTime, true);
         }
 
     }
